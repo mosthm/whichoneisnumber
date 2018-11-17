@@ -10,19 +10,44 @@ import android.widget.TextView;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    
-
+    Button startGame;
+    Button showBestScore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        GameFragment gameFragement = new GameFragment();
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.frag_container,gameFragement)
-                .commit();
+        findViews();
+        configure();
 
 
+
+    }
+    private void findViews(){
+        startGame=(Button) findViewById((R.id.start_game));
+        showBestScore=(Button) findViewById((R.id.best_score));
+    }
+    private void configure(){
+        startGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GameFragment gameFragement = new GameFragment();
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.frag_container,gameFragement)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+        showBestScore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BestScoreFragment bestScoreFragment = new BestScoreFragment();
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.frag_container,bestScoreFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
     }
 
 }
