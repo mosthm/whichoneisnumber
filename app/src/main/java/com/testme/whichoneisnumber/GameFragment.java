@@ -30,10 +30,14 @@ public class GameFragment extends Fragment {
     private int rightNum;
     private boolean gameIntProgress = false;
     private CountDownTimer countdowntim;
-
+    private String playerName;
+    private void readArguments(){
+        playerName=getArguments().getString("player_name",null);
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        readArguments();
         return inflater.inflate(R.layout.fragment_game,container,false);
     }
 
@@ -41,7 +45,7 @@ public class GameFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findviews(view);
-        countdowntim = new CountDownTimer(10000,1000) {
+        countdowntim = new CountDownTimer(15000,1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 retime.setText(getString(R.string.game_time,(int)(millisUntilFinished/1000)));
@@ -50,6 +54,7 @@ public class GameFragment extends Fragment {
             @Override
             public void onFinish() {
                 retime.setText("Game Finish");
+                updateHighScore();
             }
         };
         countdowntim.start();
@@ -63,7 +68,28 @@ public class GameFragment extends Fragment {
         super.onPause();
         countdowntim.cancel();
     }
+    private void updateHighScore(){
+//      get rank list
+        RankList ranklist =MyPrefrenceManger.getInstance(getActivity()).getRankList();
+            User newUser =new User();
+            newUser.setName(playerName);
+            newUser.setScore(pointNum);
+            ranklist.addUserList(newUser);
+            //save rank list in sha=eredprefernce
+            MyPrefrenceManger.getInstance(getActivity()).putRannkList(ranklist);
 
+//        User previouseUser =MyPrefrenceManger.getInstance(getActivity()).getBestUser();
+//        if(previouseUser==null||previouseUser.getScore()<pointNum){
+//            User newUser =new User();
+//            newUser.setName(playerName);
+//            newUser.setScore(pointNum);
+//            MyPrefrenceManger.getInstance(getActivity()).putBestUser(newUser);
+//        }
+//        int previouseHighScore = MyPrefrenceManger.getInstance(getActivity()).getHighScore();
+//        if (previouseHighScore<pointNum){
+//            MyPrefrenceManger.getInstance(getActivity()).putHighScore(pointNum);
+//        }
+    }
     private void configureViews(){
         //point.setText(getString(R.string.user_points,0));
 
@@ -97,9 +123,9 @@ public class GameFragment extends Fragment {
     }
     private void evalute(int flag){
 
-        if(gLevel==GAME_lEVEL_COUNT){
-            return;
-        }else {
+//        if(gLevel==GAME_lEVEL_COUNT){
+//            return;
+//        }else {
             if(flag==Left_Button){
                 if(leftNum>rightNum){
                     pointNum++;
@@ -113,7 +139,7 @@ public class GameFragment extends Fragment {
                     pointNum++;
                 }
             }
-        }
+//        }
 
     }
     private  void  findviews(View view){
@@ -140,14 +166,14 @@ public class GameFragment extends Fragment {
             level.setText("Game Finish");
             return;
         }else {
-            if(gLevel==GAME_lEVEL_COUNT){
-                return;
-            }
-            else {
-                gLevel ++;
-                //level.setText(String.valueOf(gLevel));
-                level.setText(getString(R.string.game_level,gLevel,GAME_lEVEL_COUNT));
-            }
+//            if(gLevel==GAME_lEVEL_COUNT){
+//                return;
+//            }
+//            else {
+//                gLevel ++;
+//                //level.setText(String.valueOf(gLevel));
+//                level.setText(getString(R.string.game_level,gLevel,GAME_lEVEL_COUNT));
+//            }
         }
         leftNum=intgenerateInt();
         rightNum=intgenerateInt();
