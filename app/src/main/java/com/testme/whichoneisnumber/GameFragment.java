@@ -1,5 +1,9 @@
 package com.testme.whichoneisnumber;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -9,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.Random;
@@ -23,14 +28,19 @@ public class GameFragment extends Fragment {
     private TextView point;
     private TextView level;
     private TextView retime;
-
+    private TextView countDown;
+    private LinearLayout gameContainer;
+    //**********************************************************************************************
+    private int countDownInt=3;
     private int gLevel=0;
     private int pointNum=0;
     private int leftNum;
     private int rightNum;
     private boolean gameIntProgress = false;
+    //**********************************************************************************************
     private CountDownTimer countdowntim;
     private String playerName;
+    //**********************************************************************************************
     private void readArguments(){
         playerName=getArguments().getString("player_name",null);
     }
@@ -45,7 +55,12 @@ public class GameFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         findviews(view);
-        countdowntim = new CountDownTimer(15000,1000) {
+        configureViews();
+        startCountDown();
+    }
+    private void startGame(){
+
+        countdowntim = new CountDownTimer(8000,1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 retime.setText(getString(R.string.game_time,(int)(millisUntilFinished/1000)));
@@ -55,14 +70,58 @@ public class GameFragment extends Fragment {
             public void onFinish() {
                 retime.setText("Game Finish");
                 updateHighScore();
+                leftNumber.setVisibility(View.INVISIBLE);
+                rightNumber.setVisibility(View.INVISIBLE);
+                equal.setVisibility(View.INVISIBLE);
             }
         };
         countdowntim.start();
         gameIntProgress=true;
-        configureViews();
         generateNum();
     }
+    private void startCountDown(){
+        ObjectAnimator scaleXAnimation =ObjectAnimator.ofFloat(
+                countDown,"scaleX",1f,2f,1.5f,3f
+        );
+        scaleXAnimation.setDuration(1000);
+        ObjectAnimator scaleYAnimation =ObjectAnimator.ofFloat(
+                countDown,"scaleY",1f,2f,1.5f,3f
+        );
+        scaleYAnimation.setDuration(1000);
+        ObjectAnimator rotateAnimation =ObjectAnimator.ofFloat(
+                countDown,"rotation",0f,180f,360f
+        );
+        rotateAnimation.setDuration(1000);
+        ObjectAnimator alphaAnimation =ObjectAnimator.ofFloat(
+                countDown,"alpha",1f,0f
+        );
+        alphaAnimation.setDuration(1000);
+        AnimatorSet animatorSet=new AnimatorSet();
+        animatorSet.playTogether(scaleXAnimation,scaleYAnimation,rotateAnimation,alphaAnimation);
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                if (countDownInt==0){
+                    gameContainer.setVisibility(View.VISIBLE);
+                    startGame();
+                }else {
+                startCountDown();}
+            }
 
+            @Override
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                countDown.setText(String.valueOf(countDownInt));
+                countDownInt --;
+            }
+        });
+        animatorSet.start();
+
+    }
+    public void testAnimate(){
+    equal.setRotation(180f);
+    }
     @Override
     public void onPause() {
         super.onPause();
@@ -148,8 +207,10 @@ public class GameFragment extends Fragment {
         rightNumber =(Button) view.findViewById(R.id.right_Number);
         equal =(Button) view.findViewById(R.id.equal);
         point =(TextView) view.findViewById(R.id.tex_point);
-        level =(TextView) view.findViewById(R.id.tex_Level);
+        //level =(TextView) view.findViewById(R.id.tex_Level);
         retime =(TextView) view.findViewById(R.id.tex_Time);
+        countDown =(TextView) view.findViewById(R.id.count_down);
+        gameContainer =(LinearLayout) view.findViewById(R.id.game_container);
     }
     private int intgenerateInt(){
         Random random =new Random();

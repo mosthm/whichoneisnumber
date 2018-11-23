@@ -24,13 +24,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         //add value
-        viewHolder.name.setText();
-        viewHolder.score.setText();
+        viewHolder.name.setText(items.get(i).getName());
+        viewHolder.score.setText(String.valueOf(items.get(i).getScore()));
+        viewHolder.rank.setText(String.valueOf(i+1));
     }
 //chan ta item dare recyclerview
     @Override
     public int getItemCount() {
-        return 0;
+        return items.size();
     }
 
     public UserAdapter(List<User> items) {
@@ -40,11 +41,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
     class ViewHolder extends RecyclerView.ViewHolder {
         public TextView score;
         public TextView name;
+        public TextView rank;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             score=itemView.findViewById(R.id.player_score);
             name=itemView.findViewById(R.id.player_name);
+            rank=itemView.findViewById(R.id.rank_player);
         }
     }
 }
